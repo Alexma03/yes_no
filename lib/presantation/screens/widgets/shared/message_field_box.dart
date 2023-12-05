@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MessageFieldBox extends StatelessWidget {
-  const MessageFieldBox({super.key});
+  final ValueChanged<String> onValue;
+
+  const MessageFieldBox({super.key, required this.onValue});
 
   @override
   Widget build(BuildContext context) {
@@ -16,33 +18,37 @@ class MessageFieldBox extends StatelessWidget {
     );
 
     final inputDecorationTheme = InputDecoration(
-      hintText: 'Manda un mensaje',
+      hintText: 'Manda un mensaje acabado con ?',
       enabledBorder: outlineInputBorder,
       focusedBorder: outlineInputBorder,
       filled: true,
-      fillColor: Colors.transparent,
+      fillColor: Theme.of(context).colorScheme.surfaceVariant,
       suffixIcon: IconButton(
         icon: const Icon(Icons.send),
         onPressed: () {
           textController.clear();
+          onValue(textController.value.text);
         },
       ),
     );
 
-    return TextFormField(
-      onTapOutside: (event) {
-        focusNode.unfocus();
-      },
-      keyboardType: TextInputType.text,
-      textInputAction: TextInputAction.send,
-      keyboardAppearance: Brightness.dark,
-      focusNode: focusNode,
-      controller: textController,
-      decoration: inputDecorationTheme,
-      onFieldSubmitted: (value) {
-        textController.clear();
-        focusNode.requestFocus();
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0), // Add bottom spacing
+      child: TextFormField(
+        onTapOutside: (event) {
+          focusNode.unfocus();
+        },
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.send,
+        focusNode: focusNode,
+        controller: textController,
+        decoration: inputDecorationTheme,
+        onFieldSubmitted: (value) {
+          textController.clear();
+          focusNode.requestFocus();
+          onValue(value);
+        },
+      ),
     );
   }
 }
